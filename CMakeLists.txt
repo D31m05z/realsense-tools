@@ -13,4 +13,8 @@ target_link_libraries(mapzing PRIVATE realsense2::realsense2 ${OpenCV_LIBRARIES}
 add_executable(mapzing_record record/record.cpp)
 target_link_libraries(mapzing_record PRIVATE realsense2::realsense2 ${OpenCV_LIBRARIES})
 
-add_subdirectory(mapzing_slam)
+
+find_package(ORB_SLAM2 QUIET)
+if(ORB_SLAM2_FOUND)
+	add_subdirectory(mapzing_slam)
+endif()
