@@ -66,23 +66,25 @@ int main(int argc, char* argv[]) try
 	const std::string window_name = "Display Image";
 	namedWindow(window_name, WINDOW_AUTOSIZE);
 
-    auto depth_stream_tmp = selection.get_stream(RS2_STREAM_INFRARED, 1);
-    //depth_stream_tmp.
-    auto depth_stream = selection.get_stream(RS2_STREAM_INFRARED, 1)
-        .as<rs2::video_stream_profile>();
+    auto stream_profile_left = selection.get_stream(RS2_STREAM_INFRARED, 1).as<rs2::video_stream_profile>();
+    auto stream_profile_right = selection.get_stream(RS2_STREAM_INFRARED, 2).as<rs2::video_stream_profile>();
+    auto stream_profile_color = selection.get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>();
 
-    auto depth_stream2 = selection.get_stream(RS2_STREAM_INFRARED, 1)
-        .as<rs2::video_stream_profile>();
+    auto intinsics_left = stream_profile_left.get_intrinsics();
+    auto intinsics_right = stream_profile_right.get_intrinsics();
+    auto intinsics_color = stream_profile_color.get_intrinsics();
 
-    auto intinsics = depth_stream.get_intrinsics();
-    auto intinsics2 = depth_stream2.get_intrinsics();
+    std::vector<float> dist_left(intinsics_left.coeffs, intinsics_left.coeffs + 5);
+    saveCameraParams("left_cam_int.yml", Size(intinsics_left.width, intinsics_left.height),
+        intinsics_left.fx, intinsics_left.fy, intinsics_left.ppx, intinsics_left.ppy, dist_left);
 
-    std::vector<float> dist(intinsics.coeffs, intinsics.coeffs + 5);
-    saveCameraParams("left_cam_int.yml", Size(intinsics.width, intinsics.height),
-        intinsics.fx, intinsics.fy, intinsics.ppx, intinsics.ppy, dist);
-    std::vector<float> dist2(intinsics2.coeffs, intinsics2.coeffs + 5);
-    saveCameraParams("right_cam_int.yml", Size(intinsics2.width, intinsics2.height),
-        intinsics2.fx, intinsics2.fy, intinsics2.ppx, intinsics2.ppy, dist2);
+    std::vector<float> dist_right(intinsics_right.coeffs, intinsics_right.coeffs + 5);
+    saveCameraParams("right_cam_int.yml", Size(intinsics_right.width, intinsics_right.height),
+        intinsics_right.fx, intinsics_right.fy, intinsics_right.ppx, intinsics_right.ppy, dist_right);
+
+    std::vector<float> dist_color(intinsics_color.coeffs, intinsics_color.coeffs + 5);
+    saveCameraParams("color_cam_int.yml", Size(intinsics_color.width, intinsics_color.height),
+                     intinsics_color.fx, intinsics_color.fy, intinsics_color.ppx, intinsics_color.ppy, dist_color);
 
 	while (waitKey(1) < 0 && getWindowProperty(window_name, WND_PROP_AUTOSIZE) >= 0)
 	{
@@ -113,10 +115,6 @@ int main(int argc, char* argv[]) try
 		imshow(window_name, left_image_l);
 		//imshow(window_name + " right", left_image_r);
 	}
-
-
-   
-
 	return EXIT_SUCCESS;
 }
 catch (const rs2::error& e)
