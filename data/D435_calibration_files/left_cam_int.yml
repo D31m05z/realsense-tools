@@ -1,0 +1,14 @@
+%YAML:1.0
+---
+calibration_time: "Wed May  8 15:22:53 2019"
+image_width: 1280
+image_height: 720
+fx: 6.4263000488281250e+02
+fy: 6.4263000488281250e+02
+cx: 6.4299517822265625e+02
+cy: 3.5503701782226563e+02
+distortion_coefficients: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: f
+   data: [ 0., 0., 0., 0., 0. ]
